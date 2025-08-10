@@ -24,33 +24,28 @@ export default function AudioDropzone() {
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
-
-    const uploadedFile = acceptedFiles[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      setFileName(uploadedFile.name.replace(/\.[^/.]+$/, ""));
+    const uploadedAudioFile = acceptedFiles[0];
+    if (uploadedAudioFile) {
+      setFile(uploadedAudioFile);
+      setFileName(uploadedAudioFile.name.replace(/\.[^/.]+$/, ""));
     } else {
       alert("Please drop a valid audio file.");
     }
   }, []);
 
   const saveFile = async () => {
-    if (!file) return;
-
+    if (!file) 
+        return;
     const db = await initDB();
-
     const fileData = {
       name: fileName,
       type: file.type,
       data: await file.arrayBuffer(),
       createdAt: new Date(),
     };
-
     await db.add("audios", fileData);
-
     setFile(null);
-    setFileName("");
+    setFileName("")
     alert("Audio saved successfully to your audio library!");
     router.push("/")
   };

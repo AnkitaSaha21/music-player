@@ -37,17 +37,15 @@ export default function PlayerPage() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllAudioData = async () => {
       const db = await openDB("audioDB", 1);
-      const allFiles = (await db.getAll("audios")) as StoredAudioFromDB[];
-
+      const allAudioFiles = (await db.getAll("audios")) as StoredAudioFromDB[];
       const filesWithUrls = await Promise.all(
-        allFiles.map(async (file) => {
+        allAudioFiles.map(async (file) => {
           const blob = new Blob([file.data], {
             type: file.type || "audio/mpeg",
           });
           const url = URL.createObjectURL(blob);
-
           const duration = await new Promise<number>((resolve) => {
             const audio = document.createElement("audio");
             audio.src = url;
@@ -64,8 +62,7 @@ export default function PlayerPage() {
       const startIndex = filesWithUrls.findIndex((a) => a.id === Number(id));
       setCurrentIndex(startIndex >= 0 ? startIndex : 0);
     };
-
-    fetchData();
+    fetchAllAudioData();
   }, [id]);
 
   useEffect(() => {
@@ -74,7 +71,7 @@ export default function PlayerPage() {
     if (isPlaying) {
       audioRef.current
         .play()
-        .catch((err) => console.warn("Playback interrupted:", err));
+        .catch((err) => console.warn("Playback interrupted: ", err));
     } else {
       audioRef.current.pause();
     }
@@ -120,25 +117,11 @@ export default function PlayerPage() {
     setIsPlaying(true);
   };
 
-  const formatTime = (time: number) => {
-    if (!time || isNaN(time)) return "00:00";
-    const m = Math.floor(time / 60)
-      .toString()
-      .padStart(2, "0");
-    const s = Math.floor(time % 60)
-      .toString()
-      .padStart(2, "0");
-    return `${m}:${s}`;
-  };
-
   const formatDuration = (seconds?: number) => {
     if (!seconds || isNaN(seconds)) return "00:00";
-    const m = Math.floor(seconds / 60)
-      .toString()
+    const m = Math.floor(seconds / 60).toString()
       .padStart(2, "0");
-    const s = Math.floor(seconds % 60)
-      .toString()
-      .padStart(2, "0");
+    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
 
@@ -146,7 +129,6 @@ export default function PlayerPage() {
     <div className="min-h-screen bg-black text-green-400 flex flex-col md:flex-row">
       {audios.length > 0 && (
         <>
-          
           <div className="flex flex-col md:flex-1 py-4">
             <div className="px-4 mb-2">
               <button
@@ -181,7 +163,7 @@ export default function PlayerPage() {
                 onLoadedMetadata={() => setProgress(0)}
               />
               <div className="flex items-center gap-2 w-full max-w-md">
-                <span className="text-xs sm:text-sm">{formatTime(progress)}</span>
+                <span className="text-xs sm:text-sm">{formatDuration(progress)}</span>
                 <input
                   type="range"
                   min="0"
@@ -197,7 +179,7 @@ export default function PlayerPage() {
                   className="flex-1"
                 />
                 <span className="text-xs sm:text-sm">
-                  {formatTime(audioRef.current?.duration || 0)}
+                  {formatDuration(audioRef.current?.duration || 0)}
                 </span>
               </div>
               <div className="flex gap-4 mt-4">
@@ -217,8 +199,6 @@ export default function PlayerPage() {
               </div>
             </div>
           </div>
-
-         
           <div className="w-full md:flex-1 pt-4 md:w-1/3 px-2 border-t md:border-t-0 md:border-l border-green-800 overflow-y-auto max-h-60 md:max-h-none">
             {audios.map((a, i) => (
               <div

@@ -6,7 +6,7 @@ import { List, Grid, Clock, Play, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-interface StoredAudioFromDB {
+interface StoredAudioFromDBType {
   id: number;
   name: string;
   type: string;
@@ -14,7 +14,7 @@ interface StoredAudioFromDB {
   createdAt: string;
 }
 
-interface StoredAudioUI {
+interface StoredAudioUIType {
   id: number;
   name: string;
   createdAt: string;
@@ -23,7 +23,7 @@ interface StoredAudioUI {
 }
 
 export default function AudioLibrary() {
-  const [audios, setAudios] = useState<StoredAudioUI[]>([]);
+  const [audios, setAudios] = useState<StoredAudioUIType[]>([])
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
@@ -39,9 +39,7 @@ export default function AudioLibrary() {
           }
         },
       });
-
-      const allFiles = (await db.getAll("audios")) as StoredAudioFromDB[];
-
+      const allFiles = (await db.getAll("audios")) as StoredAudioFromDBType[];
       const filesWithUrls = allFiles.map((file) => {
         const blob = new Blob([file.data], { type: file.type || "audio/mpeg" });
         const url = URL.createObjectURL(blob);
@@ -56,7 +54,7 @@ export default function AudioLibrary() {
       const withDurations = await Promise.all(
         filesWithUrls.map(
           (audio) =>
-            new Promise<StoredAudioUI>((resolve) => {
+            new Promise<StoredAudioUIType>((resolve) => {
               const audioElement = new Audio(audio.url);
 
               const setAudioDuration = () => {
@@ -86,18 +84,14 @@ export default function AudioLibrary() {
     return () => {
       audios.forEach((audio) => {
         URL.revokeObjectURL(audio.url);
-      });
+    });
     };
   }, []);
 
   const formatDuration = (seconds?: number) => {
     if (!seconds || isNaN(seconds)) return "00:00";
-    const m = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
-    const s = Math.floor(seconds % 60)
-      .toString()
-      .padStart(2, "0");
+    const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
 
