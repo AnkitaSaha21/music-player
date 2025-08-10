@@ -13,7 +13,7 @@ export default function AddFilePage() {
         onClick={() => router.push("/")}
         className="flex items-center text-green-400 hover:text-green-300 cursor-pointer mx-auto"
       >
-        <ArrowLeft className="w-5 h-5 mr-2 sm:hidden md:visible" />
+        <ArrowLeft className="w-5 h-5 mr-2" />
         Click here to go back to Your Audio Library
       </button>
     </div>

@@ -146,7 +146,7 @@ export default function PlayerPage() {
     <div className="min-h-screen bg-black text-green-400 flex flex-col md:flex-row">
       {audios.length > 0 && (
         <>
-          {/* Left: Player */}
+          
           <div className="flex flex-col md:flex-1 py-4">
             <div className="px-4 mb-2">
               <button

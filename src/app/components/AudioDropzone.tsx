@@ -3,10 +3,12 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { openDB } from "idb";
+import { useRouter } from "next/navigation";
 
 export default function AudioDropzone() {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
+  const router = useRouter();
 
   const initDB = async () => {
     return openDB("audioDB", 1, {
@@ -50,6 +52,7 @@ export default function AudioDropzone() {
     setFile(null);
     setFileName("");
     alert("Audio saved successfully to your audio library!");
+    router.push("/")
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
